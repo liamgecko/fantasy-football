@@ -19,8 +19,8 @@ function inferCurrentSeason() {
   return month >= 6 ? year : year - 1
 }
 
-export async function GET(request: NextRequest, { params }: { params: { teamId: string } }) {
-  const { teamId } = params
+export async function GET(request: NextRequest, { params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params
   const searchParams = request.nextUrl.searchParams
 
   const seasonParam = parseInteger(searchParams.get("season"))

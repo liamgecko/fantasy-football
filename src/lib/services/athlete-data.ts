@@ -646,11 +646,15 @@ function parseStatNumber(value?: string) {
 }
 
 function findSeasonStat(
-  category: AthleteStatsResponse["categories"] extends Array<infer Item> ? Item : never,
+  category: NonNullable<AthleteStatsResponse["categories"]>[0] | undefined,
   season: number,
   teamId: string
 ) {
-  const stats = category?.statistics
+  if (!category) {
+    return undefined
+  }
+  
+  const stats = category.statistics
   if (!stats) {
     return undefined
   }
