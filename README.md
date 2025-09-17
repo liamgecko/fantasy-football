@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fantasy App v2
 
-## Getting Started
+A modern Next.js 15 application for delivering a data-rich NFL fantasy football experience. The project is optimized for high-volume external data ingestion (ESPN APIs) and a responsive UI powered by Tailwind CSS v4 and shadcn/ui components.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js 15 (App Router, TypeScript)
+- Tailwind CSS v4 + shadcn/ui component library
+- ESLint 9, Turbopack dev/build pipeline
+
+## Local Development
+
+Install dependencies once after cloning:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` and edit files under `src/app` or `src/components`—changes hot reload automatically.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Run linting to validate code quality:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+```
 
-## Learn More
+Warm the ESPN data snapshot (run this whenever you need fresh data or set it up on a scheduler):
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run ingest
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data Documentation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Detailed notes for the ESPN data sources used by the app live under `docs/`.
 
-## Deploy on Vercel
+- [NFL Athletes Catalogue](docs/data/espn-athletes-endpoint.md): collection endpoint schema, usage tips, and sample payloads.
+- [NFL Athlete Detail Endpoints](docs/data/espn-athlete-detail-endpoints.md): per-athlete profile, stats, gamelog, splits, and league leaderboard feeds.
+- [NFL Teams Endpoint](docs/data/espn-teams-endpoint.md): franchise metadata, branding assets, and navigation links.
+- [NFL Team Detail Endpoints](docs/data/espn-team-detail-endpoints.md): team profile, roster, schedule, statistics, and record feeds.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Additional endpoints will be documented in the same directory as they are integrated.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Goals
+
+- Aggregate and normalize ESPN NFL data to power fantasy-focused insights.
+- Prioritize fast data access and responsive UI interactions even with large payloads.
+- Provide clear internal documentation so additional agents can extend features confidently.
