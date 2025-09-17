@@ -24,13 +24,19 @@ interface AthletesToolbarProps {
 
 export function AthletesToolbar({ table, positions, selectedPosition, onPositionChange }: AthletesToolbarProps) {
   const column = table.getColumn("player")
+  const [searchValue, setSearchValue] = React.useState("")
   const filterValue = React.useMemo(
     () => (column?.getFilterValue() as FilterValue | undefined) ?? {},
     [column]
   )
-  const searchValue = filterValue.search ?? ""
   const defaultGroup = positions.find((option) => option.value === "group:offense")
   const activePosition = selectedPosition ?? filterValue.position ?? defaultGroup?.value ?? positions[0]?.value ?? ""
+
+  // Sync search value with column filter
+  React.useEffect(() => {
+    const currentFilter = (column?.getFilterValue() as FilterValue | undefined) ?? {}
+    setSearchValue(currentFilter.search ?? "")
+  }, [column])
 
   React.useEffect(() => {
     if (!column || !selectedPosition) return
@@ -51,6 +57,7 @@ export function AthletesToolbar({ table, positions, selectedPosition, onPosition
   )
 
   const handleSearchChange = (value: string) => {
+    setSearchValue(value)
     const currentFilter = (column?.getFilterValue() as FilterValue | undefined) ?? {}
     const next: FilterValue = {
       ...currentFilter,
