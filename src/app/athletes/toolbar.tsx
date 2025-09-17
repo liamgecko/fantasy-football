@@ -31,21 +31,17 @@ export function AthletesToolbar({ table, positions, selectedPosition, onPosition
   const searchValue = filterValue.search ?? ""
   const defaultGroup = positions.find((option) => option.value === "group:offense")
   const activePosition = selectedPosition ?? filterValue.position ?? defaultGroup?.value ?? positions[0]?.value ?? ""
-  const currentPosition = filterValue.position
 
   React.useEffect(() => {
-    if (!column) return
-    const desiredPosition = selectedPosition ?? defaultGroup?.value
-    if (desiredPosition && currentPosition !== desiredPosition) {
+    if (!column || !selectedPosition) return
+    const currentFilter = (column.getFilterValue() as FilterValue | undefined) ?? {}
+    if (currentFilter.position !== selectedPosition) {
       column.setFilterValue({
-        ...filterValue,
-        position: desiredPosition,
+        ...currentFilter,
+        position: selectedPosition,
       })
-      if (selectedPosition !== desiredPosition) {
-        onPositionChange?.(desiredPosition)
-      }
     }
-  }, [column, defaultGroup?.value, currentPosition, filterValue, onPositionChange, selectedPosition])
+  }, [column, selectedPosition])
 
   const updateFilter = React.useCallback(
     (next: FilterValue | undefined) => {
@@ -55,17 +51,19 @@ export function AthletesToolbar({ table, positions, selectedPosition, onPosition
   )
 
   const handleSearchChange = (value: string) => {
+    const currentFilter = (column?.getFilterValue() as FilterValue | undefined) ?? {}
     const next: FilterValue = {
-      ...filterValue,
+      ...currentFilter,
       search: value || undefined,
-      position: filterValue.position,
+      position: currentFilter.position,
     }
     updateFilter(next)
   }
 
   const handlePositionChange = (value: string) => {
+    const currentFilter = (column?.getFilterValue() as FilterValue | undefined) ?? {}
     const next: FilterValue = {
-      search: filterValue.search,
+      search: currentFilter.search,
       position: value,
     }
     updateFilter(next)
