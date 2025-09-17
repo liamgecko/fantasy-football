@@ -24,7 +24,10 @@ interface AthletesToolbarProps {
 
 export function AthletesToolbar({ table, positions, selectedPosition, onPositionChange }: AthletesToolbarProps) {
   const column = table.getColumn("player")
-  const filterValue = (column?.getFilterValue() as FilterValue | undefined) ?? {}
+  const filterValue = React.useMemo(
+    () => (column?.getFilterValue() as FilterValue | undefined) ?? {},
+    [column]
+  )
   const searchValue = filterValue.search ?? ""
   const defaultGroup = positions.find((option) => option.value === "group:offense")
   const activePosition = selectedPosition ?? filterValue.position ?? defaultGroup?.value ?? positions[0]?.value ?? ""
