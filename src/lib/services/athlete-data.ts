@@ -1,5 +1,4 @@
-import fs from "fs/promises"
-import path from "path"
+import { unstable_cache, revalidateTag } from "next/cache"
 
 import { espnSiteWebFetch } from "../espn/client"
 import { ALLOWED_POSITIONS } from "../constants/positions"
@@ -76,12 +75,42 @@ export type AthletesSnapshot = {
   players: ActiveRosterAthlete[]
 }
 
-const ATHLETES_CACHE_PATH = path.join(process.cwd(), "data", "cache", "athletes.json")
 const ATHLETE_SNAPSHOT_VERSION = 4
+const ATHLETE_SNAPSHOT_CACHE_TAG = "athletes"
+const ATHLETE_SNAPSHOT_CACHE_KEY = `athletes-snapshot-v${ATHLETE_SNAPSHOT_VERSION}`
+
+const getCachedAthleteSnapshot = unstable_cache(
+  async () => {
+    const start = process.hrtime.bigint()
+    console.info("[athletes] cache miss – rebuilding snapshot…")
+
+    try {
+      const snapshot = await buildAthleteSnapshot()
+      const durationMs = Number(process.hrtime.bigint() - start) / 1_000_000
+      console.info(
+        `[athletes] snapshot rebuilt in ${durationMs.toFixed(0)}ms (season ${snapshot.season}, ${snapshot.players.length} players)`
+      )
+      return snapshot
+    } catch (error) {
+      const durationMs = Number(process.hrtime.bigint() - start) / 1_000_000
+      console.error(
+        `[athletes] snapshot rebuild failed after ${durationMs.toFixed(0)}ms`,
+        error
+      )
+      throw error
+    }
+  },
+  [ATHLETE_SNAPSHOT_CACHE_KEY],
+  { revalidate: 60 * 60 * 6, tags: [ATHLETE_SNAPSHOT_CACHE_TAG] }
+)
 
 export async function listActiveAthletes() {
-  const snapshot = await loadAthleteSnapshot()
+  const snapshot = await getCachedAthleteSnapshot()
   return snapshot.players
+}
+
+export async function invalidateAthleteSnapshotCache() {
+  revalidateTag(ATHLETE_SNAPSHOT_CACHE_TAG)
 }
 
 export async function buildAthleteSnapshot(): Promise<AthletesSnapshot> {
@@ -310,33 +339,6 @@ export async function buildAthleteSnapshot(): Promise<AthletesSnapshot> {
     generatedAt: new Date().toISOString(),
     season,
     players: result,
-  }
-}
-
-export async function saveAthleteSnapshot(snapshot: AthletesSnapshot) {
-  await fs.mkdir(path.dirname(ATHLETES_CACHE_PATH), { recursive: true })
-  await fs.writeFile(ATHLETES_CACHE_PATH, JSON.stringify(snapshot, null, 2), "utf-8")
-}
-
-async function loadAthleteSnapshot(): Promise<AthletesSnapshot> {
-  try {
-    const raw = await fs.readFile(ATHLETES_CACHE_PATH, "utf-8")
-    const snapshot = JSON.parse(raw) as AthletesSnapshot
-
-    if (
-      !snapshot.players ||
-      snapshot.season !== getCurrentSeason() ||
-      snapshot.schemaVersion !== ATHLETE_SNAPSHOT_VERSION
-    ) {
-      throw new Error("Snapshot is stale")
-    }
-
-    return snapshot
-  } catch (error) {
-    console.warn("Athlete snapshot missing or stale. Rebuilding cache…", error)
-    const snapshot = await buildAthleteSnapshot()
-    await saveAthleteSnapshot(snapshot)
-    return snapshot
   }
 }
 
