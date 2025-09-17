@@ -86,24 +86,14 @@ export function AthletesTable({ data }: AthletesTableProps) {
   }, [orderedColumnIds, visibleColumnIds])
 
   const defaultSorting: SortingState = React.useMemo(() => {
-    if (activePosition === "QB") {
-      return [
-        {
-          id: "passingYards",
-          desc: true,
-        },
-      ]
-    }
-    if (activePosition === "WR") {
-      return [
-        {
-          id: "receivingYards",
-          desc: true,
-        },
-      ]
-    }
-    return []
-  }, [activePosition])
+    // Default to fantasy points for all positions
+    return [
+      {
+        id: "fantasyPoints",
+        desc: true,
+      },
+    ]
+  }, [])
 
   return (
     <>

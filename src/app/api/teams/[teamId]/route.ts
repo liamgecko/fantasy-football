@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { ESPNApiError } from "@/lib/espn/client"
 import { getTeamDetail } from "@/lib/services/team-data"
 
-export const revalidate = 60 * 5 // refresh detailed team data every 5 minutes by default
+export const revalidate = 300 // refresh detailed team data every 5 minutes by default
 
 function parseInteger(value: string | null) {
   if (!value) return undefined

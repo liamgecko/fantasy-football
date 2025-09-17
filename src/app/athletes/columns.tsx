@@ -22,17 +22,17 @@ export const POSITION_FILTER_DEFINITIONS = [
   { label: "RB", value: "RB", members: ["RB"] as const },
   { label: "WR", value: "WR", members: ["WR"] as const },
   { label: "TE", value: "TE", members: ["TE"] as const },
-  { label: "RB / WR / TE", value: "group:offense", members: POSITION_GROUPS["group:offense"] },
+  { label: "RB/WR/TE", value: "group:offense", members: POSITION_GROUPS["group:offense"] },
   { label: "K", value: "K", members: ["K"] as const },
   { label: "CB", value: "CB", members: ["CB"] as const },
   { label: "S", value: "S", members: ["S"] as const },
   { label: "DL", value: "DL", members: ["DE"] as const },
   { label: "DT", value: "DT", members: ["DT"] as const },
   { label: "LB", value: "LB", members: ["LB"] as const },
-  { label: "DB / DL / LB", value: "group:defense", members: POSITION_GROUPS["group:defense"] },
+  { label: "DB/DL/LB", value: "group:defense", members: POSITION_GROUPS["group:defense"] },
 ] as const
 
-export const ALWAYS_VISIBLE_COLUMNS = ["player", "opponent"] as const
+export const ALWAYS_VISIBLE_COLUMNS = ["player", "opponent", "fantasyPoints"] as const
 
 const POSITION_FILTER_MAP = POSITION_FILTER_DEFINITIONS.reduce<Record<string, readonly string[]>>(
   (acc, def) => {
@@ -155,10 +155,18 @@ const baseColumns: ColumnDef<ActiveRosterAthlete>[] = [
   },
   {
     id: "fantasyPoints",
-    accessorFn: () => 0,
+    accessorKey: "fantasyPoints",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Fantasy Pts" className="justify-end" />, 
-    cell: () => <div className="text-right">0</div>,
-    sortingFn: "basic",
+    cell: ({ row }) => {
+      const points = row.original.fantasyPoints ?? 0
+      return (
+        <div className="text-right font-medium">
+          {decimalFormatter.format(points)}
+        </div>
+      )
+    },
+    enableSorting: true,
+    enableHiding: false,
   },
 ]
 

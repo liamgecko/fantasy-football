@@ -66,6 +66,7 @@ export type ActiveRosterAthlete = {
   fieldGoals_50: MadeAttempt
   extraPoints: MadeAttempt
   extraPointPct: number
+  fantasyPoints: number
 }
 
 export type AthletesSnapshot = {
@@ -152,6 +153,7 @@ export async function buildAthleteSnapshot(): Promise<AthletesSnapshot> {
       fieldGoals_50: { made: 0, attempts: 0 },
       extraPoints: { made: 0, attempts: 0 },
       extraPointPct: 0,
+      fantasyPoints: 0,
     })
   })
 
@@ -282,6 +284,7 @@ export async function buildAthleteSnapshot(): Promise<AthletesSnapshot> {
               fieldGoals_50: { made: 0, attempts: 0 },
               extraPoints: { made: 0, attempts: 0 },
               extraPointPct: 0,
+              fantasyPoints: 0,
             })
           })
         })

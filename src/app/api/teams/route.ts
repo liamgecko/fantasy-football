@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { ESPNApiError } from "@/lib/espn/client"
 import { listTeams } from "@/lib/services/team-data"
 
-export const revalidate = 60 * 60 // 1 hour cache at the route level
+export const revalidate = 3600 // 1 hour cache at the route level
 
 export async function GET() {
   try {

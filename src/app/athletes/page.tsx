@@ -4,7 +4,7 @@ import { listActiveAthletes } from "@/lib/services/athlete-data"
 
 import { AthletesTable } from "./athletes-table"
 
-export const revalidate = 60 * 60 * 6
+export const revalidate = 21600
 
 export default async function AthletesPage() {
   const athletes = await listActiveAthletes()
