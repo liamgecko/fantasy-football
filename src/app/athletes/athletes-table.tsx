@@ -94,12 +94,21 @@ export function AthletesTable({ data }: AthletesTableProps) {
         },
       ]
     }
+    if (activePosition === "WR") {
+      return [
+        {
+          id: "receivingYards",
+          desc: true,
+        },
+      ]
+    }
     return []
   }, [activePosition])
 
   return (
     <>
       <DataTable
+        key={activePosition}
         columns={[...resolvedColumns]}
         data={data}
         initialPageSize={20}
